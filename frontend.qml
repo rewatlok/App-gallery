@@ -395,8 +395,8 @@ ApplicationWindow {
         modal: true
         focus: true
         anchors.centerIn: Overlay.overlay
-        width: 500
-        height: 300
+        width: 550
+        height: 450
         
         background: Rectangle {
             color: "white"
@@ -457,60 +457,66 @@ ApplicationWindow {
                     font.pixelSize: 12
                 }
                 
-                ComboBox {
-                    id: editColorCombo
-                    model: [
-                        { name: "Синий", value: "#3498db" },
-                        { name: "Зеленый", value: "#2ecc71" },
-                        { name: "Красный", value: "#e74c3c" },
-                        { name: "Оранжевый", value: "#f39c12" },
-                        { name: "Фиолетовый", value: "#9b59b6" },
-                        { name: "Серый", value: "#95a5a6" },
-                        { name: "Бирюзовый", value: "#1abc9c" },
-                        { name: "Темно-синий", value: "#34495e" },
-                        { name: "Розовый", value: "#e84393" }
-                    ]
-                    textRole: "name"
-                    valueRole: "value"
+                ColumnLayout {
                     Layout.fillWidth: true
+                    spacing: 5
                     
-                    delegate: ItemDelegate {
-                        width: parent.width
-                        height: 30
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 10
                         
-                        RowLayout {
-                            anchors.fill: parent
-                            spacing: 10
-                            
-                            Rectangle {
-                                width: 15
-                                height: 15
-                                radius: 7
-                                color: model.value
-                            }
-                            
-                            Text {
-                                text: model.name
-                                Layout.fillWidth: true
-                                font.pixelSize: 12
+                        Rectangle {
+                            id: selectedColorRect
+                            width: 30
+                            height: 30
+                            radius: 5
+                            color: "#3498db"
+                            border.color: "#ddd"
+                            border.width: 1
+                        }
+                        
+                        Button {
+                            text: "Выбрать цвет"
+                            Layout.fillWidth: true
+                            onClicked: {
+                                colorPickerPopup.targetRect = selectedColorRect
+                                colorPickerPopup.open()
                             }
                         }
                     }
                     
-                    contentItem: RowLayout {
-                        spacing: 10
+                    GridLayout {
+                        columns: 9
+                        columnSpacing: 5
+                        rowSpacing: 5
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 120
                         
-                        Rectangle {
-                            width: 15
-                            height: 15
-                            radius: 7
-                            color: editColorCombo.currentValue
-                        }
-                        
-                        Text {
-                            text: editColorCombo.currentText
-                            Layout.fillWidth: true
-                            font.pixelSize: 12
+                        Repeater {
+                            model: [
+                                "#000000", "#2c3e50", "#34495e", "#2c2c2c", "#4a4a4a", "#616161",
+                                "#3498db", "#2980b9", "#1f618d", "#21618c", "#1b4f72", "#154360",
+                                "#2ecc71", "#27ae60", "#229954", "#1e8449", "#196f3d", "#145a32",
+                                "#e74c3c", "#c0392b", "#a93226", "#922b21", "#7b241c", "#641e16",
+                                "#f39c12", "#d68910", "#b9770e", "#9c640c", "#7e5109", "#61380c",
+                                "#9b59b6", "#8e44ad", "#7d3c98", "#6c3483", "#5b2c6f", "#4a235a",
+                                "#1abc9c", "#17a589", "#148f77", "#117864", "#0e6251", "#0b5345"
+                            ]
+                            
+                            delegate: Rectangle {
+                                width: 30
+                                height: 30
+                                color: modelData
+                                border.color: color === selectedColorRect.color ? "#2c3e50" : "#ddd"
+                                border.width: color === selectedColorRect.color ? 3 : 1
+                                
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: {
+                                        selectedColorRect.color = color
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -535,7 +541,7 @@ ApplicationWindow {
                                 editCategoryPopup.categoryData.id,
                                 editCategoryName.text,
                                 editCategoryDescription.text,
-                                editColorCombo.currentValue
+                                selectedColorRect.color
                             )
                             editCategoryPopup.close()
                         }
@@ -548,22 +554,116 @@ ApplicationWindow {
             editCategoryPopup.categoryData = category
             editCategoryName.text = category.name
             editCategoryDescription.text = category.description || ""
+            selectedColorRect.color = category.color
+            editCategoryPopup.open()
+        }
+    }
+
+    Popup {
+        id: colorPickerPopup
+        modal: true
+        focus: true
+        anchors.centerIn: Overlay.overlay
+        width: 500
+        height: 400
+        
+        background: Rectangle {
+            color: "white"
+            radius: 5
+            border.color: "#ddd"
+            border.width: 1
+        }
+        
+        property var targetRect: null
+        
+        ColumnLayout {
+            anchors.fill: parent
+            anchors.margins: 15
+            spacing: 15
             
-            var colorIndex = -1
-            for (var i = 0; i < editColorCombo.model.length; i++) {
-                if (editColorCombo.model[i].value === category.color) {
-                    colorIndex = i
-                    break
+            Text {
+                text: "Выбор цвета"
+                font.pixelSize: 18
+                font.bold: true
+                Layout.alignment: Qt.AlignHCenter
+            }
+            
+            Rectangle {
+                Layout.alignment: Qt.AlignHCenter
+                width: 40
+                height: 40
+                radius: 5
+                color: colorPickerPopup.targetRect ? colorPickerPopup.targetRect.color : "#3498db"
+                border.color: "#2c3e50"
+                border.width: 2
+            }
+            
+            Rectangle {
+                id: colorPalette
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                border.color: "#ddd"
+                border.width: 1
+                
+                MouseArea {
+                    anchors.fill: parent
+                    
+                    function getColor(x, y) {
+                        var width = parent.width
+                        var height = parent.height
+                        
+                        var hue = x / width
+                        var saturation = 1.0
+                        var lightness = 1.0 - (y / height)
+                        
+                        return Qt.hsla(hue, saturation, lightness, 1.0)
+                    }
+                    
+                    onPositionChanged: (mouse) => {
+                        if (mouse.buttons & Qt.LeftButton) {
+                            if (colorPickerPopup.targetRect) {
+                                var color = getColor(mouse.x, mouse.y)
+                                colorPickerPopup.targetRect.color = color
+                            }
+                        }
+                    }
+                    
+                    onClicked: (mouse) => {
+                        if (colorPickerPopup.targetRect) {
+                            var color = getColor(mouse.x, mouse.y)
+                            colorPickerPopup.targetRect.color = color
+                            colorPickerPopup.close()
+                        }
+                    }
+                }
+                
+                Canvas {
+                    anchors.fill: parent
+                    
+                    onPaint: {
+                        var ctx = getContext("2d")
+                        var width = parent.width
+                        var height = parent.height
+                        
+                        for (var y = 0; y < height; y++) {
+                            for (var x = 0; x < width; x++) {
+                                var hue = x / width
+                                var saturation = 1.0
+                                var lightness = 1.0 - (y / height)
+                                
+                                ctx.fillStyle = Qt.hsla(hue, saturation, lightness, 1.0)
+                                ctx.fillRect(x, y, 1, 1)
+                            }
+                        }
+                    }
                 }
             }
-            if (colorIndex !== -1) {
-                editColorCombo.currentIndex = colorIndex
-            } else {
-                editColorCombo.model.push({name: "Текущий", value: category.color})
-                editColorCombo.currentIndex = editColorCombo.model.length - 1
-            }
             
-            editCategoryPopup.open()
+            Button {
+                text: "Закрыть"
+                Layout.fillWidth: true
+                onClicked: colorPickerPopup.close()
+            }
         }
     }
 
@@ -573,44 +673,44 @@ ApplicationWindow {
         property var photoIds: []
         property int photoCount: 0
 
-MenuItem {
-    id: fullScreenItem
-    text: "Просмотр фото (полноэкранный)"
-    height: 28
-    visible: photoContextMenu.photoCount === 1
-    
-    contentItem: Text {
-        text: fullScreenItem.text
-        font.pixelSize: 11
-        color: fullScreenItem.enabled ? "#333" : "#999"
-        horizontalAlignment: Text.AlignLeft
-        verticalAlignment: Text.AlignVCenter
-        leftPadding: 10
-        rightPadding: 10
-        elide: Text.ElideRight
-    }
-    
-    background: Rectangle {
-        color: fullScreenItem.hovered ? "#f0f7ff" : "transparent"
-    }
-    
-    onTriggered: {
-        var photoId = photoContextMenu.photoIds[0]
-        var photo = null
-        
-        for (var i = 0; i < backend.photos.length; i++) {
-            if (backend.photos[i].id === photoId) {
-                photo = backend.photos[i]
-                break
+        MenuItem {
+            id: fullScreenItem
+            text: "Просмотр фото (полноэкранный)"
+            height: 28
+            visible: photoContextMenu.photoCount === 1
+            
+            contentItem: Text {
+                text: fullScreenItem.text
+                font.pixelSize: 11
+                color: fullScreenItem.enabled ? "#333" : "#999"
+                horizontalAlignment: Text.AlignLeft
+                verticalAlignment: Text.AlignVCenter
+                leftPadding: 10
+                rightPadding: 10
+                elide: Text.ElideRight
+            }
+            
+            background: Rectangle {
+                color: fullScreenItem.hovered ? "#f0f7ff" : "transparent"
+            }
+            
+            onTriggered: {
+                var photoId = photoContextMenu.photoIds[0]
+                var photo = null
+                
+                for (var i = 0; i < backend.photos.length; i++) {
+                    if (backend.photos[i].id === photoId) {
+                        photo = backend.photos[i]
+                        break
+                    }
+                }
+                
+                if (photo) {
+                    fullScreenPhotoPopup.photoData = photo
+                    fullScreenPhotoPopup.open()
+                }
             }
         }
-        
-        if (photo) {
-            fullScreenPhotoPopup.photoData = photo
-            fullScreenPhotoPopup.open()
-        }
-    }
-}
         
         MenuItem {
             id: viewEditItem
@@ -1204,12 +1304,12 @@ MenuItem {
                                         }
                                     }
                                     
-onDoubleClicked: (mouse) => {
-    if (mouse.button === Qt.LeftButton) {
-        fullScreenPhotoPopup.photoData = modelData
-        fullScreenPhotoPopup.open()
-    }
-}
+                                    onDoubleClicked: (mouse) => {
+                                        if (mouse.button === Qt.LeftButton) {
+                                            fullScreenPhotoPopup.photoData = modelData
+                                            fullScreenPhotoPopup.open()
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -1324,115 +1424,115 @@ onDoubleClicked: (mouse) => {
         }
     }
 
-Popup {
-    id: fullScreenPhotoPopup
-    modal: true
-    focus: true
-    width: window.width
-    height: window.height
-    x: 0
-    y: 0
-    closePolicy: Popup.CloseOnEscape
-    
-    background: Rectangle {
-        color: "black"
-    }
-    
-    property var photoData: null
-    
-    Shortcut {
-        sequence: "Esc"
-        onActivated: fullScreenPhotoPopup.close()
-    }
-    
-    Image {
-        id: fullScreenImage
-        anchors.fill: parent
-        source: fullScreenPhotoPopup.photoData ? fullScreenPhotoPopup.photoData.qml_path : ""
-        fillMode: Image.PreserveAspectFit
-        asynchronous: true
+    Popup {
+        id: fullScreenPhotoPopup
+        modal: true
+        focus: true
+        width: window.width
+        height: window.height
+        x: 0
+        y: 0
+        closePolicy: Popup.CloseOnEscape
+        
+        background: Rectangle {
+            color: "black"
+        }
+        
+        property var photoData: null
+        
+        Shortcut {
+            sequence: "Esc"
+            onActivated: fullScreenPhotoPopup.close()
+        }
+        
+        Image {
+            id: fullScreenImage
+            anchors.fill: parent
+            source: fullScreenPhotoPopup.photoData ? fullScreenPhotoPopup.photoData.qml_path : ""
+            fillMode: Image.PreserveAspectFit
+            asynchronous: true
+            
+            Rectangle {
+                visible: !parent.source || parent.status === Image.Error
+                anchors.fill: parent
+                color: "#2c3e50"
+                
+                Text {
+                    anchors.centerIn: parent
+                    text: "Изображение не загружено"
+                    color: "white"
+                    font.pixelSize: 16
+                }
+            }
+        }
         
         Rectangle {
-            visible: !parent.source || parent.status === Image.Error
-            anchors.fill: parent
-            color: "#2c3e50"
+            id: closeButton
+            anchors.top: parent.top
+            anchors.right: parent.right
+            anchors.margins: 10
+            width: 36
+            height: 24
+            radius: 4
+            color: "#ff0000"
+            border.width: 1
+            border.color: "white"
+            z: 1000
             
             Text {
                 anchors.centerIn: parent
-                text: "Изображение не загружено"
+                text: "×"
                 color: "white"
                 font.pixelSize: 16
+                font.bold: true
             }
-        }
-    }
-    
-    Rectangle {
-        id: closeButton
-        anchors.top: parent.top
-        anchors.right: parent.right
-        anchors.margins: 10
-        width: 36
-        height: 24
-        radius: 4
-        color: "#ff0000"
-        border.width: 1
-        border.color: "white"
-        z: 1000
-        
-        Text {
-            anchors.centerIn: parent
-            text: "×"
-            color: "white"
-            font.pixelSize: 16
-            font.bold: true
-        }
-        
-        MouseArea {
-            id: closeMouseArea
-            anchors.fill: parent
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
             
-            onClicked: fullScreenPhotoPopup.close()
-            
-            onEntered: {
-                closeButton.color = "#ff3333"
-                closeButton.border.width = 2
-            }
-            onExited: {
-                closeButton.color = "#ff0000"
-                closeButton.border.width = 1
-            }
-        }
-        
-        states: [
-            State {
-                name: "pressed"
-                when: closeMouseArea.pressed
-                PropertyChanges { 
-                    target: closeButton; 
-                    color: "#cc0000"
-                    scale: 0.95
+            MouseArea {
+                id: closeMouseArea
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                
+                onClicked: fullScreenPhotoPopup.close()
+                
+                onEntered: {
+                    closeButton.color = "#ff3333"
+                    closeButton.border.width = 2
+                }
+                onExited: {
+                    closeButton.color = "#ff0000"
+                    closeButton.border.width = 1
                 }
             }
-        ]
-        
-        transitions: Transition {
-            NumberAnimation { properties: "scale, border.width"; duration: 100 }
-            ColorAnimation { duration: 100 }
+            
+            states: [
+                State {
+                    name: "pressed"
+                    when: closeMouseArea.pressed
+                    PropertyChanges { 
+                        target: closeButton; 
+                        color: "#cc0000"
+                        scale: 0.95
+                    }
+                }
+            ]
+            
+            transitions: Transition {
+                NumberAnimation { properties: "scale, border.width"; duration: 100 }
+                ColorAnimation { duration: 100 }
+            }
         }
+        
+        onOpened: forceActiveFocus()
     }
-    
-    onOpened: forceActiveFocus()
-}
 
     Popup {
         id: categoryPopup
         modal: true
         focus: true
         anchors.centerIn: Overlay.overlay
-        width: 500
-        height: 450
+        width: 700
+        height: 600
         
         background: Rectangle {
             color: "white"
@@ -1489,20 +1589,69 @@ Popup {
                         text: "Цвет:" 
                         font.pixelSize: 12
                     }
-                    ComboBox {
-                        id: colorCombo
-                        model: [
-                            { name: "Синий", value: "#3498db" },
-                            { name: "Зеленый", value: "#2ecc71" },
-                            { name: "Красный", value: "#e74c3c" },
-                            { name: "Оранжевый", value: "#f39c12" },
-                            { name: "Фиолетовый", value: "#9b59b6" },
-                            { name: "Серый", value: "#95a5a6" }
-                        ]
-                        textRole: "name"
-                        valueRole: "value"
-                        currentIndex: 0
+                    
+                    ColumnLayout {
                         Layout.fillWidth: true
+                        spacing: 5
+                        
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: 10
+                            
+                            Rectangle {
+                                id: newSelectedColorRect
+                                width: 30
+                                height: 30
+                                radius: 5
+                                color: "#3498db"
+                                border.color: "#ddd"
+                                border.width: 1
+                            }
+                            
+                            Button {
+                                text: "Выбрать цвет"
+                                Layout.fillWidth: true
+                                onClicked: {
+                                    colorPickerPopup.targetRect = newSelectedColorRect
+                                    colorPickerPopup.open()
+                                }
+                            }
+                        }
+                        
+                        GridLayout {
+                            columns: 9
+                            columnSpacing: 5
+                            rowSpacing: 5
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 120
+                            
+                            Repeater {
+                                model: [
+                                    "#000000", "#2c3e50", "#34495e", "#2c2c2c", "#4a4a4a", "#616161",
+                                    "#3498db", "#2980b9", "#1f618d", "#21618c", "#1b4f72", "#154360",
+                                    "#2ecc71", "#27ae60", "#229954", "#1e8449", "#196f3d", "#145a32",
+                                    "#e74c3c", "#c0392b", "#a93226", "#922b21", "#7b241c", "#641e16",
+                                    "#f39c12", "#d68910", "#b9770e", "#9c640c", "#7e5109", "#61380c",
+                                    "#9b59b6", "#8e44ad", "#7d3c98", "#6c3483", "#5b2c6f", "#4a235a",
+                                    "#1abc9c", "#17a589", "#148f77", "#117864", "#0e6251", "#0b5345"
+                                ]
+                                
+                                delegate: Rectangle {
+                                    width: 30
+                                    height: 30
+                                    color: modelData
+                                    border.color: color === newSelectedColorRect.color ? "#2c3e50" : "#ddd"
+                                    border.width: color === newSelectedColorRect.color ? 3 : 1
+                                    
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        onClicked: {
+                                            newSelectedColorRect.color = color
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                     
                     Item { Layout.fillWidth: true }
@@ -1516,7 +1665,7 @@ Popup {
                                 backend.add_category(
                                     newCategoryName.text,
                                     newCategoryDescription.text,
-                                    colorCombo.currentValue
+                                    newSelectedColorRect.color
                                 )
                                 newCategoryName.text = ""
                                 newCategoryDescription.text = ""
