@@ -4,12 +4,8 @@ import QtQuick.Layouts
 import QtQuick.Dialogs
 
 ApplicationWindow {
-    id: window
-    width: 1200
-    height: 700
-    title: "Галерея фотографий"
-    visible: true
 
+//--------------------------------------//
     property string trashIcon: "🗑️"
     property string pencilIcon: "✎"
     property string categoryIcon: "●"
@@ -17,6 +13,13 @@ ApplicationWindow {
     property string crossIcon: "×"
     property string zoomOutIcon: "–"
     property string zoomInIcon: "+"
+//--------------------------------------//
+
+    id: window
+    width: 1200
+    height: 700
+    title: "Галерея фотографий"
+    visible: true
 
     FileDialog {
         id: fileDialog
