@@ -10,6 +10,14 @@ ApplicationWindow {
     title: "Галерея фотографий"
     visible: true
 
+    property string trashIcon: "🗑️"
+    property string pencilIcon: "✎"
+    property string categoryIcon: "●"
+    property string checkmarkIcon: "✓"
+    property string crossIcon: "×"
+    property string zoomOutIcon: "–"
+    property string zoomInIcon: "+"
+
     FileDialog {
         id: fileDialog
         title: "Выберите фотографии"
@@ -129,7 +137,7 @@ ApplicationWindow {
                     Button {
                         width: parent.width
                         height: 40
-                        text: "🗑️ Без категории"
+                        text: trashIcon + " Без категории"
                         onClicked: {
                             for (var i = 0; i < categorySelectPopup.photoIds.length; i++) {
                                 backend.set_photo_category(categorySelectPopup.photoIds[i], 0)
@@ -152,7 +160,7 @@ ApplicationWindow {
                         delegate: Button {
                             width: parent.width
                             height: 40
-                            text: "● " + modelData.name
+                            text: categoryIcon + " " + modelData.name
                             
                             onClicked: {
                                 for (var i = 0; i < categorySelectPopup.photoIds.length; i++) {
@@ -298,7 +306,7 @@ ApplicationWindow {
                             anchors.verticalCenter: parent.verticalCenter
                             width: 30
                             height: 20
-                            text: "✎"
+                            text: pencilIcon
                             visible: fileNameField.text !== (photoViewPopup.photoData ? photoViewPopup.photoData.filename : "")
                             font.pixelSize: 10
                             
@@ -973,7 +981,7 @@ ApplicationWindow {
                 
                 Button {
                     id: zoomOutButton
-                    text: "–"
+                    text: zoomOutIcon
                     width: 30
                     height: 30
                     font.pixelSize: 16
@@ -1015,7 +1023,7 @@ ApplicationWindow {
                 
                 Button {
                     id: zoomInButton
-                    text: "+"
+                    text: zoomInIcon
                     width: 30
                     height: 30
                     font.pixelSize: 16
@@ -1175,7 +1183,7 @@ ApplicationWindow {
                                     
                                     Text {
                                         anchors.centerIn: parent
-                                        text: "✓"
+                                        text: checkmarkIcon
                                         color: "white"
                                         font.pixelSize: 14
                                         font.bold: true
@@ -1481,7 +1489,7 @@ ApplicationWindow {
             
             Text {
                 anchors.centerIn: parent
-                text: "×"
+                text: crossIcon
                 color: "white"
                 font.pixelSize: 16
                 font.bold: true
@@ -1778,7 +1786,7 @@ ApplicationWindow {
                                     Layout.alignment: Qt.AlignRight
                                     
                                     Button {
-                                        text: "✎"
+                                        text: pencilIcon
                                         width: 40
                                         height: 30
                                         font.pixelSize: 12
