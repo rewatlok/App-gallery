@@ -247,13 +247,6 @@ class Backend(QObject):
             photo = Photo.get_by_id(photo_id)
             photo_name = os.path.basename(photo.path)
             
-            try:
-                if os.path.exists(photo.path):
-                    os.remove(photo.path)
-                    print(f"Удален файл: {photo_name}")
-            except Exception as file_error:
-                print(f"Не удалось удалить файл {photo_name}: {file_error}")
-            
             photo.delete_instance()
             
             print(f"Удалено фото из базы: {photo_name}")
