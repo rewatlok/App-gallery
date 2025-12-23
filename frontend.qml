@@ -4,17 +4,6 @@ import QtQuick.Layouts
 import QtQuick.Dialogs
 
 ApplicationWindow {
-
-//---------------------------------------//
-    property string trashIcon: "🗑️"
-    property string pencilIcon: "✎"
-    property string categoryIcon: "●"
-    property string checkmarkIcon: "✓"
-    property string crossIcon: "×"
-    property string zoomOutIcon: "–"
-    property string zoomInIcon: "+"
-//---------------------------------------//
-
     id: window
     width: 1200
     height: 700
@@ -140,7 +129,7 @@ ApplicationWindow {
                     Button {
                         width: parent.width
                         height: 40
-                        text: trashIcon + " Без категории"
+                        text: "Без категории"
                         onClicked: {
                             for (var i = 0; i < categorySelectPopup.photoIds.length; i++) {
                                 backend.set_photo_category(categorySelectPopup.photoIds[i], 0)
@@ -296,7 +285,7 @@ ApplicationWindow {
                             anchors.verticalCenter: parent.verticalCenter
                             width: 30
                             height: 20
-                            text: pencilIcon
+                            text: "edit"
                             visible: fileNameField.text !== (photoViewPopup.photoData ? photoViewPopup.photoData.filename : "")
                             font.pixelSize: 10
 
@@ -881,7 +870,7 @@ ApplicationWindow {
 
                 Button {
                     id: zoomOutButton
-                    text: zoomOutIcon
+                    text: "–"
                     width: 30
                     height: 30
                     font.pixelSize: 16
@@ -908,7 +897,7 @@ ApplicationWindow {
 
                 Button {
                     id: zoomInButton
-                    text: zoomInIcon
+                    text: "+"
                     width: 30
                     height: 30
                     font.pixelSize: 16
@@ -1053,7 +1042,7 @@ ApplicationWindow {
 
                                     Text {
                                         anchors.centerIn: parent
-                                        text: checkmarkIcon
+                                        text: ""
                                         color: "white"
                                         font.pixelSize: 14
                                         font.bold: true
@@ -1831,17 +1820,6 @@ ApplicationWindow {
                                             font.bold: true
                                             elide: Text.ElideRight
                                             Layout.fillWidth: true
-
-                                            MouseArea {
-                                                anchors.fill: parent
-                                                cursorShape: Qt.PointingHandCursor
-                                                onClicked: {
-                                                    if (backend) {
-                                                        backend.set_current_category(modelData.id)
-                                                    }
-                                                    categoryPopup.close()
-                                                }
-                                            }
                                         }
 
                                         Rectangle {
@@ -1888,7 +1866,7 @@ ApplicationWindow {
                                     Layout.alignment: Qt.AlignRight
 
                                     Button {
-                                        text: pencilIcon
+                                        text: "edit"
                                         width: 40
                                         height: 30
                                         font.pixelSize: 12
