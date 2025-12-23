@@ -272,20 +272,23 @@ ApplicationWindow {
                         color: "#7f8c8d"
                     }
 
-                    TextField {
-                        id: fileNameField
+                    RowLayout {
                         Layout.fillWidth: true
-                        text: photoViewPopup.photoData ? photoViewPopup.photoData.filename : ""
-                        placeholderText: "Введите новое имя файла"
-                        font.pixelSize: 11
+                        spacing: 5
+
+                        TextField {
+                            id: fileNameField
+                            Layout.fillWidth: true
+                            text: photoViewPopup.photoData ? photoViewPopup.photoData.filename : ""
+                            placeholderText: "Введите новое имя файла"
+                            font.pixelSize: 11
+                        }
 
                         Button {
                             id: renameButton
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 30
-                            height: 20
-                            text: "✎"
+                            text: "Изменить"
+                            width: 80
+                            height: 30
                             visible: fileNameField.text !== (photoViewPopup.photoData ? photoViewPopup.photoData.filename : "")
                             font.pixelSize: 10
 
@@ -1864,12 +1867,13 @@ ApplicationWindow {
                                 RowLayout {
                                     spacing: 5
                                     Layout.alignment: Qt.AlignRight
+                                    Layout.minimumWidth: 150
 
                                     Button {
-                                        text: "✎"
-                                        width: 40
+                                        text: "Редактировать"
+                                        Layout.preferredWidth: 90
                                         height: 30
-                                        font.pixelSize: 12
+                                        font.pixelSize: 11
                                         ToolTip.text: "Редактировать категорию"
                                         ToolTip.visible: hovered
 
@@ -1880,7 +1884,7 @@ ApplicationWindow {
 
                                     Button {
                                         text: "Удалить"
-                                        width: 80
+                                        Layout.preferredWidth: 70
                                         height: 30
                                         visible: modelData.id !== 0
                                         onClicked: {
