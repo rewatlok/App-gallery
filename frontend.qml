@@ -285,7 +285,7 @@ ApplicationWindow {
                             anchors.verticalCenter: parent.verticalCenter
                             width: 30
                             height: 20
-                            text: "edit"
+                            text: "✎"
                             visible: fileNameField.text !== (photoViewPopup.photoData ? photoViewPopup.photoData.filename : "")
                             font.pixelSize: 10
 
@@ -1866,7 +1866,7 @@ ApplicationWindow {
                                     Layout.alignment: Qt.AlignRight
 
                                     Button {
-                                        text: "edit"
+                                        text: "✎"
                                         width: 40
                                         height: 30
                                         font.pixelSize: 12
