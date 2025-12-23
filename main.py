@@ -247,16 +247,21 @@ class Backend(QObject):
             photo = Photo.get_by_id(photo_id)
             photo_name = os.path.basename(photo.path)
             
+            # Удаляем только запись из базы данных, НЕ удаляем файл из файловой системы
+            # Старый код удаления файла закомментирован или удален
+            """
             try:
                 if os.path.exists(photo.path):
                     os.remove(photo.path)
                     print(f"Удален файл: {photo_name}")
             except Exception as file_error:
                 print(f"Не удалось удалить файл {photo_name}: {file_error}")
+            """
             
+            # Только удаление из базы данных
             photo.delete_instance()
             
-            print(f"Удалено фото из базы: {photo_name}")
+            print(f"Удалено фото из базы: {photo_name} (файл сохранен на диске)")
             
             self.update_categories()
             self.update_photos(self._current_category)
