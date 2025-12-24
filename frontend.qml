@@ -1285,7 +1285,13 @@ ApplicationWindow {
 
             Text {
                 anchors.centerIn: parent
-                text: "Галерея пуста\nНажмите «Добавить фото»"
+                text: {
+                    if (categoryCombo.currentValue === 0) {
+                        return "Галерея пуста\nНажмите «Добавить фото»"
+                    } else {
+                        return "В этой категории нет фотографий\nВыберите другую категорию или добавьте фото"
+                    }
+                }
                 font.pixelSize: 16
                 color: "#95a5a6"
                 horizontalAlignment: Text.AlignHCenter
