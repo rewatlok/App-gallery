@@ -105,7 +105,7 @@ ApplicationWindow {
 
         ColumnLayout {
             anchors.fill: parent
-            anchors.margins: 10
+            anchors.margins: Math.min(30, parent.width * 0.03, parent.height * 0.03)
             spacing: 10
 
             Text {
@@ -222,7 +222,7 @@ ApplicationWindow {
 
                 Image {
                     anchors.fill: parent
-                    anchors.margins: 10
+                    anchors.margins: Math.min(30, parent.width * 0.03, parent.height * 0.03)
                     source: photoViewPopup.photoData ? photoViewPopup.photoData.qml_path : ""
                     fillMode: Image.PreserveAspectFit
 
@@ -984,7 +984,7 @@ ApplicationWindow {
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
                     anchors.right: scrollBar.left
-                    anchors.margins: 10
+                    anchors.margins: Math.min(30, parent.width * 0.03, parent.height * 0.03)
 
                     contentWidth: width
                     contentHeight: Math.max(flowContainer.height, height)
@@ -1522,7 +1522,7 @@ ApplicationWindow {
         Rectangle {
             anchors.top: parent.top
             anchors.right: parent.right
-            anchors.margins: 10
+            anchors.margins: Math.min(30, parent.width * 0.03, parent.height * 0.03)
             width: 36
             height: 24
             radius: 4
